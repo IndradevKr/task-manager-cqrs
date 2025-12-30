@@ -3,6 +3,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {CreateTaskRequest} from "./commands/requests/create-task.request";
 import { CreateTaskCommand } from "./commands/create-task";
 import { GetTaskQuery } from "./queries/get-tasks.query";
+import { Task } from "./types/task";
 
 @Controller('tasks') 
 export class TasksController {
@@ -17,7 +18,7 @@ export class TasksController {
     }
 
     @Get()
-    async getAllTasks(){
+    async getAllTasks(): Promise<Task[]>{
         return this.queryBus.execute(new GetTaskQuery())
     }
 }

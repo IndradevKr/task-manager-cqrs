@@ -63,6 +63,18 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Database Migrations
+```
+# To manually create a migration file
+$ npm run migration:create <relative_path_to_migrations_dir>/<file-name>
+
+# To run migrations
+$ npm run migration:run
+
+# To revert migration
+$ npm run migration:revert
+```
+
 ## Run tests
 
 ```bash

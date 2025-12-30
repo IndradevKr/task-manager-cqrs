@@ -15,7 +15,6 @@ export const dataSourceOptions: DataSourceOptions = {
     username: configService.getOrThrow<string>('DB_USER'),
     password: configService.getOrThrow<string>('DB_PASSWORD'),
     database: configService.getOrThrow<string>('DB_NAME'),
-    entities: isProd ? ['dist/**/*.entity.js'] : [__dirname + '/**/*.entity.ts'],
     migrations: isProd ? ['dist/db/migrations/*.js'] : [__dirname + '/migrations/*.ts'],
     migrationsTableName: 'migrations',
     migrationsRun: false,
