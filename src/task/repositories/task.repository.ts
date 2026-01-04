@@ -1,16 +1,37 @@
 import { Injectable } from "@nestjs/common";
+import { DeleteResult, Repository, UpdateResult } from "typeorm";
+import dataSource from "src/db/datasource";
+import { TaskEntity } from "../entities/task.entity";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Task } from "../types/task";
+import { CreateTaskRequest } from "../commands/requests/create-task.request";
+import { UpdateTaskRequest } from "../commands/requests/update-task.request";
+import { ITaskRepository } from "../types/task-repository.type";
 
 @Injectable()
-export class TaskRepository {
-    private tasks: Task[] = [];
+export class TaskRepository implements ITaskRepository {
+    constructor(
+        @InjectRepository(TaskEntity)
+        private taskRepository: Repository<TaskEntity>
+    ) { }
 
-    async create(task: Task) {
-        this.tasks.push(task);
-        return task;
+    create(data: CreateTaskRequest): Promise<TaskEntity> {
+        return this.taskRepository.save(data);
     }
 
-    async findAll(): Promise<Task[]> {
-        return this.tasks;
+    update(id: string, data: UpdateTaskRequest): Promise<UpdateResult> {
+        return this.taskRepository.update(id, data);
+    }
+
+    findAll(): Promise<TaskEntity[]> {
+        return this.taskRepository.find();
+    }
+
+    findOne(id: string): Promise<TaskEntity | null> {
+        return this.taskRepository.findOneBy({ id: id })
+    }
+
+    delete(id: string): Promise<DeleteResult> {
+        return this.taskRepository.delete(id);
     }
 }

@@ -31,6 +31,25 @@
 $ npm install
 ```
 
+<p>
+- Create .env file in root where .env.example is located. <br /> The variable is listed in .env.example file, assign the value accordingly in .env.
+</p>
+
+### To run postgres in docker, follow these steps:
+
+- Create a directory named as db_data. You may modify the folder name defined in docker-compose.yaml file as per your need. This directory is to store volume data.
+
+- To run docker containers:
+```bash
+$ docker compose up -d
+```
+
+To verify if the container is running or not.
+```bash
+$ docker ps
+```
+
+
 ## Compile and run the project
 
 ```bash
@@ -42,6 +61,18 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+## Database Migrations
+```
+# To manually create a migration file
+$ npm run migration:create <relative_path_to_migrations_dir>/<file-name>
+
+# To run migrations
+$ npm run migration:run
+
+# To revert migration
+$ npm run migration:revert
 ```
 
 ## Run tests
