@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import dataSource from "src/db/datasource";
 import { TaskEntity } from "../entities/task.entity";
@@ -7,6 +7,7 @@ import { Task } from "../types/task";
 import { CreateTaskRequest } from "../commands/requests/create-task.request";
 import { UpdateTaskRequest } from "../commands/requests/update-task.request";
 import { ITaskRepository } from "../types/task-repository.type";
+import { HttpErrorByCode } from "@nestjs/common/utils/http-error-by-code.util";
 
 @Injectable()
 export class TaskRepository implements ITaskRepository {
@@ -19,8 +20,17 @@ export class TaskRepository implements ITaskRepository {
         return this.taskRepository.save(data);
     }
 
-    update(id: string, data: UpdateTaskRequest): Promise<UpdateResult> {
-        return this.taskRepository.update(id, data);
+    async update(id: string, data: UpdateTaskRequest): Promise<TaskEntity | null> {
+        const task = await this.taskRepository.findOneBy({ id: id });
+        if (!task) {
+            throw new NotFoundException(`Task with ID "${id}" not found`);
+        }
+        const updatedTask = this.taskRepository.create({
+            ...task,
+            ...data
+        });
+
+        return await this.taskRepository.save(updatedTask)
     }
 
     findAll(): Promise<TaskEntity[]> {
@@ -31,7 +41,14 @@ export class TaskRepository implements ITaskRepository {
         return this.taskRepository.findOneBy({ id: id })
     }
 
-    delete(id: string): Promise<DeleteResult> {
-        return this.taskRepository.delete(id);
+    async delete(id: string): Promise<TaskEntity> {
+        const task = await this.taskRepository.findOne({ where: { id } });
+        console.log("task data: ", task)
+        if (!task) {
+            throw new NotFoundException(`Task with ID "${id}" not found`);
+        }
+
+        return await this.taskRepository.remove(task);
+
     }
 }
