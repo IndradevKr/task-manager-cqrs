@@ -1,1 +1,1 @@
-export class GetTaskQuery {}
+export class GetTasksQuery {}
