@@ -8,19 +8,35 @@ services:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_DB=${DB_DATABASE_NAME}
     ports:
-        - "5434:5432"
-
+      - '${DB_PORT:-5434}:5432'
     volumes:
       - dbData:/var/lib/postgresql/data
-
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
-      interval: 1s
+      interval: 10s
       timeout: 5s
-      retries: 10
-
+      retries: 5
     networks:
-      - postgres-network
+      - app-network
+  
+  rediscache:
+    container_name: rediscache
+    image: redis:8.4.0-alpine
+    restart: 'no'
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redisData:/data
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
 
 volumes:
   dbData:
@@ -30,9 +46,14 @@ volumes:
       type: none
       o: bind
       device: ${PWD}/db_data
+  
+  redisData:
+    name: redis_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/redis_data
 
 networks:
-  postgres-network:
-    driver: bridge
-    driver_opts:
-       com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
+  app-network:

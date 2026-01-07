@@ -37,7 +37,7 @@ $ npm install
 
 ### To run postgres in docker, follow these steps:
 
-- Create a directory named as db_data. You may modify the folder name defined in docker-compose.yaml file as per your need. This directory is to store volume data.
+- Create a directory named as db_data and redis_data in root. You may modify the folder name defined in docker-compose.yaml file as per your need. This directory is to store volume data.
 
 - To run docker containers:
 ```bash
